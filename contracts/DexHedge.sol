@@ -15,14 +15,14 @@ contract DexHedge is Ownable {
     mapping(IUniswapV2Router01 => uint256) public swapRouterIdMap;
     IUniswapV2Router01[] public swapRouterVec;
 
-    event OnAddSwap(address _swapRouter);
-    event OnRemoveSwap(address _swapRouter);
+    event OnAddDex(address _swapRouter, uint256 _id);
+    event OnRemoveDex(address _swapRouter, uint256 _id);
     event OnSetTrader(address _token, address _trader, bool _open);
     event OnSwap(address indexed _from, address indexed _to, uint256 _amountIn, uint256 _amountOut);
     event OnWithdraw(address indexed _token, address indexed _to, uint256 _amount);
 
     modifier onlyTrader(IERC20 _fromToken) {
-        require(traders[_fromToken][msg.sender], "trader dont match the token");
+        require(traders[_fromToken][msg.sender], "trader don't match the from token");
         _;
     }
 
@@ -34,16 +34,16 @@ contract DexHedge is Ownable {
         require(false, "can't renounce ownership");
     }
 
-    // swap manage
-    function addSwap(IUniswapV2Router01 _swapRouter) public onlyOwner {
+    // DEX manage
+    function addDex(IUniswapV2Router01 _swapRouter) public onlyOwner {
         require(address(_swapRouter) != address(0), "invalid swap router");
         uint256 len = swapRouterVec.length;
         swapRouterVec.push(_swapRouter);
         swapRouterIdMap[_swapRouter] = len;
-        emit OnAddSwap(address(_swapRouter));
+        emit OnAddDex(address(_swapRouter), len);
     }
 
-    function removeSwap(IUniswapV2Router01 _swapRouter) public onlyOwner {
+    function removeDex(IUniswapV2Router01 _swapRouter) public onlyOwner {
         require(address(_swapRouter) != address(0), "invalid swap router");
         uint256 id = swapRouterIdMap[_swapRouter];
         require(id < swapRouterVec.length, "invalid swap router, id over vector length");
@@ -51,19 +51,17 @@ contract DexHedge is Ownable {
 
         delete swapRouterIdMap[_swapRouter];
         swapRouterVec[id] = IUniswapV2Router01(address(0));
-        emit OnRemoveSwap(address(_swapRouter));
+        emit OnRemoveDex(address(_swapRouter), id);
     }
 
     // trader manage
-    function setTrader(address _token, address _trader, bool _open) public onlyOwner {
+    function setTrader(IERC20 _token, address _trader, bool _open) public onlyOwner {
         require(_trader != address(0), "invalid trader");
+        _token.totalSupply();
 
-        IERC20 token = IERC20(_token);
-        token.totalSupply();
-
-        mapping(address => bool) storage tokenTraders = traders[token];
+        mapping(address => bool) storage tokenTraders = traders[_token];
         tokenTraders[_trader] = _open;
-        emit OnSetTrader(_token, _trader, _open);
+        emit OnSetTrader(address(_token), _trader, _open);
     }
 
     // swap
@@ -72,22 +70,23 @@ contract DexHedge is Ownable {
         require(_dexId < swapRouterVec.length, "invalid dex id");
 
         IUniswapV2Router01 router = swapRouterVec[_dexId];
-        require(address(router) != address(0), "invalid swap router address");
+        require(address(router) != address(0), "dex be removed already");
 
-        uint256 beginFromBalance = IERC20(_path[0]).balanceOf(address(this));
-        uint256 beginToBalance = IERC20(_path[_path.length - 1]).balanceOf(address(this));
+        IERC20 tokenFrom = IERC20(_path[0]);
+        IERC20 tokenTo = IERC20(_path[_path.length - 1]);
 
-        IERC20(_path[0]).approve(address(router), _amountIn);
+        uint256 beginFromBalance = tokenFrom.balanceOf(address(this));
+        uint256 beginToBalance = tokenTo.balanceOf(address(this));
+
+        tokenFrom.approve(address(router), _amountIn);
         router.swapExactTokensForTokens(_amountIn, _amountOutMin, _path, address(this), _deadline);
 
-        address swapFrom = _path[0];
-        address swapTo = _path[_path.length - 1];
-        uint256 endFromBalance = IERC20(swapFrom).balanceOf(address(this));
-        uint256 endToBalance = IERC20(swapTo).balanceOf(address(this));
+        uint256 endFromBalance = tokenFrom.balanceOf(address(this));
+        uint256 endToBalance = tokenTo.balanceOf(address(this));
 
         uint256 actualAmountIn = beginFromBalance.sub(endFromBalance);
         uint256 actualAmountOut = endToBalance.sub(beginToBalance);
-        emit OnSwap(swapFrom, swapTo, actualAmountIn, actualAmountOut);
+        emit OnSwap(address(tokenFrom), address(tokenTo), actualAmountIn, actualAmountOut);
     }
 
     // withdraw
