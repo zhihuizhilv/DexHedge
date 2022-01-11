@@ -11,7 +11,7 @@ contract DexHedge is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    mapping(IERC20 => mapping(address => bool)) traders;
+    mapping(IERC20 => mapping(address => bool)) public traders;
     mapping(IUniswapV2Router01 => uint256) public swapRouterIdMap;
     IUniswapV2Router01[] public swapRouterVec;
 
@@ -29,12 +29,19 @@ contract DexHedge is Ownable {
     constructor() {
     }
 
+    receive() external payable {
+    }
+
     // Ownable interface
-    function renounceOwnership() public view override onlyOwner {
+    function renounceOwnership() public override {
         require(false, "can't renounce ownership");
     }
 
     // DEX manage
+    function dexPoolLen() public view returns(uint256) {
+        return swapRouterVec.length;
+    }
+
     function addDex(IUniswapV2Router01 _swapRouter) public onlyOwner {
         require(address(_swapRouter) != address(0), "invalid swap router");
         uint256 len = swapRouterVec.length;
@@ -43,15 +50,18 @@ contract DexHedge is Ownable {
         emit OnAddDex(address(_swapRouter), len);
     }
 
-    function removeDex(IUniswapV2Router01 _swapRouter) public onlyOwner {
-        require(address(_swapRouter) != address(0), "invalid swap router");
-        uint256 id = swapRouterIdMap[_swapRouter];
-        require(id < swapRouterVec.length, "invalid swap router, id over vector length");
-        require(swapRouterVec[id] == _swapRouter, "invalid swap router, cant find in vector");
+    function removeDex(uint256 _dexId) public onlyOwner {
+        require(_dexId < swapRouterVec.length, "invalid swap router, id over vector length");
+        IUniswapV2Router01 swapRouter = swapRouterVec[_dexId];
+        require(address(swapRouter) != address(0), "removed already");
 
-        delete swapRouterIdMap[_swapRouter];
-        swapRouterVec[id] = IUniswapV2Router01(address(0));
-        emit OnRemoveDex(address(_swapRouter), id);
+        uint256 mapId = swapRouterIdMap[swapRouter];
+        if (mapId == _dexId) {
+            delete swapRouterIdMap[swapRouter];
+        }
+
+        swapRouterVec[_dexId] = IUniswapV2Router01(address(0));
+        emit OnRemoveDex(address(swapRouter), _dexId);
     }
 
     // trader manage
