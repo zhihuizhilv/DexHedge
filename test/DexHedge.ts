@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { BigNumber, BigNumberish, ContractFactory, Signer, utils } from "ethers";
+import { ContractFactory, Signer } from "ethers";
 import { DexHedge, ERC20Mock, SwapRouterMock } from "../typechain";
-import { it } from "mocha";
 
 const ZERO_ASSRESS = "0x0000000000000000000000000000000000000000";
 const ETHER1 = ethers.utils.parseEther("1");
@@ -51,7 +50,7 @@ describe("DexHedge", function () {
     await swapRouter.deployed();
     await swapRouter2.deployed();
   });
-  
+
   it("owner manager", async function() {
     console.log('owner:', await dexHedge.owner());
     expect(await dexHedge.owner()).eq(await deployer.getAddress());

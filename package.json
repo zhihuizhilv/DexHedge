@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.1",
+    "@pancakeswap-libs/pancake-swap-core": "^0.1.0",
     "@uniswap/v2-periphery": "^1.1.0-beta.0"
   }
 }
