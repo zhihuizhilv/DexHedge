@@ -6,7 +6,7 @@
       "contractName": "DexHedge"
     },
     "batPairReserves": {
-      "address": "0x84fc554b62305C157418E5b4109d3946c7C0e414",
+      "address": "0xf01c9C83C65804f24e680675A18f47D5FF58e6bC",
       "contractName": "BatPairReserves"
     },
     "usdt": {

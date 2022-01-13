@@ -25,7 +25,7 @@ contract BatPairReserves {
             IPancakePair pair = IPancakePair(pairAddr);
             address token0 = pair.token0();
             (uint112 reserve0, uint112 reserve1,) = pair.getReserves();
-            if (token0 == tokens[i+2+1]) {
+            if (token0 == tokens[i*2+1]) {
                 (reserve0, reserve1) = (reserve1, reserve0);
             }
 
