@@ -1,0 +1,25 @@
+{
+  "abi": {},
+  "deployedContract": {
+    "dexHedge": {
+      "address": "0x3B62C5EaF9faf8bd6Ed56a5e106a46EAAcBAb27d",
+      "contractName": "DexHedge"
+    },
+    "batPairReserves": {
+      "address": "0x84fc554b62305C157418E5b4109d3946c7C0e414",
+      "contractName": "BatPairReserves"
+    },
+    "usdt": {
+      "address": "0xFe57a912FcE2aE127CaCeDBBf8486A6891345eB9",
+      "contractName": "ERC20Mock",
+      "name": "USDT",
+      "symbol": "USDT"
+    },
+    "ttoken": {
+      "address": "0xb9725546A70976CC2061cfBD2cc86Ef7A0e9Fa23",
+      "contractName": "ERC20Mock",
+      "name": "Test Token",
+      "symbol": "TToken"
+    }
+  }
+}
