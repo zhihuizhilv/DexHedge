@@ -18,6 +18,7 @@ const ETHER1 = ethers.utils.parseEther("1");
 let DexHedgeFactory;
 let BatPairReservesFactory;
 let ERC20MockFactory;
+let WBNBFactory;
 
 
 // contract object
@@ -25,42 +26,56 @@ let dexHedge;
 let batPairReserves;
 let usdt;
 let ttoken;
+let wbnb;
 
 
 async function getContractFactories() {
   ERC20MockFactory = await ethers.getContractFactory("ERC20Mock");
   DexHedgeFactory = await ethers.getContractFactory("DexHedge");
   BatPairReservesFactory = await ethers.getContractFactory("BatPairReserves");
+  WBNBFactory = await ethers.getContractFactory("WBNB");
 }
 
 async function deployMockContract(deployer) {
-  usdt = await ERC20MockFactory.deploy("USDT", "USDT");
-  await usdt.deployed();
+  // usdt = await ERC20MockFactory.deploy("USDT", "USDT");
+  // await usdt.deployed();
+  // deployResult.writeDeployedContract(
+  //   "usdt",
+  //   usdt.address,
+  //   "ERC20Mock",
+  //   {
+  //     name: "USDT",
+  //     symbol: "USDT"
+  //   }
+  // );
+  //
+  // deployResult.save();
+  //
+  // ttoken = await ERC20MockFactory.deploy("Test Token", "TToken");
+  // await ttoken.deployed();
+  // deployResult.writeDeployedContract(
+  //   "ttoken",
+  //   ttoken.address,
+  //   "ERC20Mock",
+  //   {
+  //     name: "Test Token",
+  //     symbol: "TToken"
+  //   }
+  // );
+  //
+  // deployResult.save();
+
+
+  wbnb = await WBNBFactory.deploy();
+  await wbnb.deployed();
   deployResult.writeDeployedContract(
-    "usdt",
-    usdt.address,
-    "ERC20Mock",
-    {
-      name: "USDT",
-      symbol: "USDT"
-    }
+    "wbnb",
+    wbnb.address,
+    "WBNB",
   );
 
   deployResult.save();
 
-  ttoken = await ERC20MockFactory.deploy("Test Token", "TToken");
-  await ttoken.deployed();
-  deployResult.writeDeployedContract(
-    "ttoken",
-    ttoken.address,
-    "ERC20Mock",
-    {
-      name: "Test Token",
-      symbol: "TToken"
-    }
-  );
-
-  deployResult.save();
 }
 
 async function deployContract() {
@@ -119,11 +134,11 @@ async function main() {
   console.log("begin deployMockContract");
   await deployMockContract(deployer);
 
-  console.log("begin deployContract");
-  await deployContract(deployer);
+  // console.log("begin deployContract");
+  // await deployContract(deployer);
 
-  console.log("begin config");
-  await config(deployer);
+  // console.log("begin config");
+  // await config(deployer);
 
   console.log("deploy done.");
 }

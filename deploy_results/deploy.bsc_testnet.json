@@ -20,6 +20,10 @@
       "contractName": "ERC20Mock",
       "name": "Test Token",
       "symbol": "TToken"
+    },
+    "wbnb": {
+      "address": "0xbac627c94f4C3aeaDC4a7d8907c10FAF5B775fD6",
+      "contractName": "WBNB"
     }
   }
 }
