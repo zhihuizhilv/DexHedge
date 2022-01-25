@@ -19,8 +19,8 @@ async function getDexHedge() {
 
 async function addTrader(trader) {
   let dexHedge = await getDexHedge();
-  // await (await dexHedge.setTrader(deployResult.getData().deployedContract.usdt.address, trader, true)).wait();
-  // await (await dexHedge.setTrader(deployResult.getData().deployedContract.ttoken.address, trader, true)).wait();
+  await (await dexHedge.setTrader(deployResult.getData().deployedContract.usdt.address, trader, true)).wait();
+  await (await dexHedge.setTrader(deployResult.getData().deployedContract.ttoken.address, trader, true)).wait();
   console.log(trader, "is usdt trader:", await dexHedge.traders(deployResult.getData().deployedContract.usdt.address, trader));
   console.log(trader, "is ttoken trader:", await dexHedge.traders(deployResult.getData().deployedContract.ttoken.address, trader));
 }
